@@ -1,11 +1,12 @@
-streamlit==1.29.0
-pandas==2.1.4
-numpy==1.26.2
-prophet==1.1.5
-statsmodels==0.14.1
-matplotlib==3.8.2
-plotly==5.18.0
-python-dateutil==2.8.2
-pystan==2.19.1.1
-holidays==0.36
-tqdm==4.66.1
+streamlit>=1.32.0
+pandas>=2.2.0
+numpy>=1.26.0
+prophet==1.1.4  # Downgrade to work with PyStan 3
+pystan>=3.9.0   # PyStan 3.x for Python 3.12
+statsmodels>=0.14.1
+matplotlib>=3.8.0
+plotly>=5.18.0
+holidays>=0.36
+tqdm>=4.66.0
+lunarcalendar>=0.0.9
+convertdate>=2.4.0
