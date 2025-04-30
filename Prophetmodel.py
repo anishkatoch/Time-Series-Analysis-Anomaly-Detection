@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+np.float_ = np.float64
 from prophet import Prophet
 from statsmodels.tsa.seasonal import seasonal_decompose
 import matplotlib.pyplot as plt
