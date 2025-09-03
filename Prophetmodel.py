@@ -125,13 +125,20 @@ if uploaded_file is not None:
             try:
                 decomposition = seasonal_decompose(df.set_index(date_col)[metric_col],
                                                    model='additive', period=52)
-                fig, axs = plt.subplots(3, 1, figsize=(12, 6))
+                @st.cache_data
+                def load_data(file=None):
+                    if file is not None:
+                        if file.name.endswith('.csv'):
+                            return pd.read_csv(file)
+                        return pd.read_excel(file)
+                    else:
+                        # Load default CSV from GitHub
+                        github_url = 'https://raw.githubusercontent.com/anishkatoch/Time-Series-Analysis-Anomaly-Detection/main/synthetic_pharma_sales.csv'
+                        return pd.read_csv(github_url)
 
-                components = [
-                    (decomposition.trend, 'Trend', '#2ecc71'),
-                    (decomposition.seasonal, 'Seasonality', '#e67e22'),
+                # Use uploaded file if present, else use default from GitHub
                     (decomposition.resid, 'Residuals', '#e74c3c')
-                ]
+                
 
                 for ax, (component, title, color) in zip(axs, components):
                     ax.plot(component, color=color, linewidth=1)
