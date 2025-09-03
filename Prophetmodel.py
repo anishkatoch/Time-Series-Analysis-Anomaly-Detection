@@ -38,47 +38,50 @@ with st.sidebar:
     st.markdown("**Instructions:**")
     st.markdown("1. Upload time series data\n2. Select date/metric columns\n3. Apply filters\n4. Analyze results")
 
+
 st.markdown("<h1 style='text-align: center; font-size: 1.5 rem;'>📈 Data Anomaly Detective</h1>", unsafe_allow_html=True)
 st.markdown("<br>", unsafe_allow_html=True)  # Adds one line break
 st.markdown("### Time Series Analysis & Anomaly Detection")
 
-if uploaded_file is not None:
-    # Data Loading and Processing
-    @st.cache_data
-    def load_data(file):
+
+
+@st.cache_data
+def load_data(file=None):
+    if file is not None:
         if file.name.endswith('.csv'):
             return pd.read_csv(file)
         return pd.read_excel(file)
+    else:
+        github_url = 'https://raw.githubusercontent.com/anishkatoch/Time-Series-Analysis-Anomaly-Detection/main/synthetic_pharma_sales.csv'
+        return pd.read_csv(github_url)
 
+# Use uploaded file if present, else use default from GitHub
+df = load_data(uploaded_file)
 
-    df = load_data(uploaded_file)
-
-    # Data Quality Report
-    with st.expander("🔍 Data Quality Report", expanded=True):
-        null_report = df.isna().sum().to_frame(name="Missing Values")
-        null_report["% Missing"] = (null_report["Missing Values"] / len(df)) * 100
-
-        col1, col2 = st.columns([3, 1])
-        with col1:
-            if not null_report[null_report["Missing Values"] > 0].empty:
-                st.error("❌ Columns with Missing Values:")
-                st.dataframe(
-                    null_report[null_report["Missing Values"] > 0]
-                    .style.format({"% Missing": "{:.1f}%"}).applymap(
-                        lambda x: 'color: #dc3545' if x > 10 else 'color: #ffc107',
-                        subset=["% Missing"]
-                    ),
-                    use_container_width=True
-                )
-            else:
-                st.success("✅ All columns have complete data")
-
-        with col2:
-            passed_cols = len(null_report[null_report["Missing Values"] == 0])
-            failed_cols = len(null_report[null_report["Missing Values"] > 0])
-            st.metric("Passed Columns", passed_cols)
-            st.metric("Failed Columns", failed_cols)
-    st.markdown("<br>", unsafe_allow_html=True)  # Adds one line break
+# Data Quality Report
+with st.expander("🔍 Data Quality Report", expanded=True):
+    null_report = df.isna().sum().to_frame(name="Missing Values")
+    null_report["% Missing"] = (null_report["Missing Values"] / len(df)) * 100
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        if not null_report[null_report["Missing Values"] > 0].empty:
+            st.error("❌ Columns with Missing Values:")
+            st.dataframe(
+                null_report[null_report["Missing Values"] > 0]
+                .style.format({"% Missing": "{:.1f}%"}).applymap(
+                    lambda x: 'color: #dc3545' if x > 10 else 'color: #ffc107',
+                    subset=["% Missing"]
+                ),
+                use_container_width=True
+            )
+        else:
+            st.success("✅ All columns have complete data")
+    with col2:
+        passed_cols = len(null_report[null_report["Missing Values"] == 0])
+        failed_cols = len(null_report[null_report["Missing Values"] > 0])
+        st.metric("Passed Columns", passed_cols)
+        st.metric("Failed Columns", failed_cols)
+st.markdown("<br>", unsafe_allow_html=True)  # Adds one line break
     # Column Selection
     with st.container():
         col1, col2 = st.columns(2)
@@ -132,9 +135,9 @@ if uploaded_file is not None:
                             return pd.read_csv(file)
                         return pd.read_excel(file)
                     else:
-                        # Load default CSV from GitHub
-                        github_url = 'https://raw.githubusercontent.com/anishkatoch/Time-Series-Analysis-Anomaly-Detection/main/synthetic_pharma_sales.csv'
-                        return pd.read_csv(github_url)
+                    # Load default CSV from GitHub (raw URL)
+                    github_url = 'https://raw.githubusercontent.com/anishkatoch/Time-Series-Analysis-Anomaly-Detection/main/synthetic_pharma_sales.csv'
+                    return pd.read_csv(github_url)
 
                 # Use uploaded file if present, else use default from GitHub
                     (decomposition.resid, 'Residuals', '#e74c3c')
